@@ -21,22 +21,22 @@ const AppLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ display: 'flex', alignItems: 'center', padding: '0 24px' }}>
-        <div style={{ color: '#fff', fontSize: 20, fontWeight: 700, marginRight: 40 }}>
-          Cafe Manager
+      <Header className="app-header" style={{ display: 'flex', alignItems: 'center', padding: '0 28px' }}>
+        <div className="app-logo" style={{ marginRight: 40 }}>
+          ☕ Café Manager
         </div>
         <Menu
           theme="dark"
           mode="horizontal"
           selectedKeys={[selectedKey]}
           items={[
-            { key: 'cafes', icon: <CoffeeOutlined />, label: <Link to="/cafes">Cafes</Link> },
+            { key: 'cafes', icon: <CoffeeOutlined />, label: <Link to="/cafes">Cafés</Link> },
             { key: 'employees', icon: <TeamOutlined />, label: <Link to="/employees">Employees</Link> },
           ]}
-          style={{ flex: 1 }}
+          style={{ flex: 1, background: 'transparent' }}
         />
       </Header>
-      <Content style={{ background: '#f5f5f5' }}>
+      <Content style={{ background: 'var(--surface, #f7f9fb)' }}>
         <Routes>
           <Route path="/" element={<Navigate to="/cafes" replace />} />
           <Route path="/cafes" element={<CafesPage />} />
@@ -58,8 +58,21 @@ function App() {
         theme={{
           token: {
             colorPrimary: '#1a7f64',
+            colorBgLayout: '#f7f9fb',
+            colorBgContainer: '#ffffff',
             borderRadius: 6,
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            colorText: '#1a2332',
+            colorTextSecondary: '#5e6c84',
+            colorBorder: '#e8ecf1',
+            controlHeight: 38,
+          },
+          components: {
+            Button: { borderRadius: 6, controlHeight: 38, fontWeight: 500 },
+            Card: { borderRadiusLG: 10, paddingLG: 24 },
+            Input: { borderRadius: 6, controlHeight: 38 },
+            Select: { borderRadius: 6, controlHeight: 38 },
+            Table: { borderRadius: 10 },
           },
         }}
       >

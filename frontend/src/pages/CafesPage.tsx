@@ -154,11 +154,11 @@ const CafesPage: React.FC = () => {
   );
 
   return (
-    <div className="p-6">
+    <div className="page-container">
       <div className="flex justify-between items-center mb-5">
         <div>
-          <h1 className="text-2xl font-bold m-0">Cafés</h1>
-          <p className="text-gray-500 mt-1 mb-0">
+          <h1 className="text-2xl font-bold m-0" style={{ color: 'var(--text-primary)' }}>Cafés</h1>
+          <p style={{ color: 'var(--text-secondary)', marginTop: 4, marginBottom: 0 }}>
             Manage your café locations and their employees
           </p>
         </div>
@@ -193,7 +193,7 @@ const CafesPage: React.FC = () => {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+      <div className="grid-wrapper">
         <AgGridReact<CafeDto>
           rowData={cafes}
           columnDefs={columnDefs}

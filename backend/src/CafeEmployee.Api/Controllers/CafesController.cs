@@ -30,7 +30,7 @@ public class CafesController : ControllerBase
     /// <summary>
     /// Creates a new café record.
     /// </summary>
-    [HttpPost("/cafe")]
+    [HttpPost("/cafes")]
     public async Task<ActionResult<Guid>> Create([FromBody] CreateCafeCommand command)
     {
         var id = await _mediator.Send(command);
@@ -40,7 +40,7 @@ public class CafesController : ControllerBase
     /// <summary>
     /// Updates an existing café record.
     /// </summary>
-    [HttpPut("/cafe")]
+    [HttpPut("/cafes")]
     public async Task<ActionResult> Update([FromBody] UpdateCafeCommand command)
     {
         await _mediator.Send(command);
@@ -50,7 +50,7 @@ public class CafesController : ControllerBase
     /// <summary>
     /// Deletes an existing café and its associated employees.
     /// </summary>
-    [HttpDelete("/cafe")]
+    [HttpDelete("/cafes")]
     public async Task<ActionResult> Delete([FromQuery] Guid id)
     {
         await _mediator.Send(new DeleteCafeCommand(id));

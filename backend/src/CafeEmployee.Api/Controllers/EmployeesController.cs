@@ -30,7 +30,7 @@ public class EmployeesController : ControllerBase
     /// <summary>
     /// Creates a new employee record.
     /// </summary>
-    [HttpPost("/employee")]
+    [HttpPost("/employees")]
     public async Task<ActionResult<string>> Create([FromBody] CreateEmployeeCommand command)
     {
         var id = await _mediator.Send(command);
@@ -40,7 +40,7 @@ public class EmployeesController : ControllerBase
     /// <summary>
     /// Updates an existing employee record.
     /// </summary>
-    [HttpPut("/employee")]
+    [HttpPut("/employees")]
     public async Task<ActionResult> Update([FromBody] UpdateEmployeeCommand command)
     {
         await _mediator.Send(command);
@@ -50,7 +50,7 @@ public class EmployeesController : ControllerBase
     /// <summary>
     /// Deletes an existing employee record.
     /// </summary>
-    [HttpDelete("/employee")]
+    [HttpDelete("/employees")]
     public async Task<ActionResult> Delete([FromQuery] string id)
     {
         await _mediator.Send(new DeleteEmployeeCommand(id));

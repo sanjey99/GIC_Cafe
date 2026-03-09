@@ -9,15 +9,15 @@ export const cafeService = {
   },
 
   create: async (payload: CreateCafePayload): Promise<{ id: string }> => {
-    const { data } = await api.post('/cafe', payload);
+    const { data } = await api.post('/cafes', payload);
     return data;
   },
 
   update: async (payload: UpdateCafePayload): Promise<void> => {
-    await api.put('/cafe', payload);
+    await api.put('/cafes', payload);
   },
 
   delete: async (id: string): Promise<void> => {
-    await api.delete('/cafe', { params: { id } });
+    await api.delete('/cafes', { params: { id } });
   },
 };

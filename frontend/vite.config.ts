@@ -23,15 +23,7 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
-      '/cafe': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-      },
       '/employees': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-      },
-      '/employee': {
         target: 'http://localhost:5000',
         changeOrigin: true,
       },

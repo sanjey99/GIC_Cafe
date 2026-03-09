@@ -1,8 +1,160 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ──────────────────────────────────────────── */
+:root {
+  --brand-primary: #1a7f64;
+  --brand-primary-light: #e6f4ef;
+  --brand-primary-dark: #115c48;
+  --brand-accent: #ff8c42;
+  --surface: #f7f9fb;
+  --surface-card: #ffffff;
+  --text-primary: #1a2332;
+  --text-secondary: #5e6c84;
+  --border-light: #e8ecf1;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Base ───────────────────────────────────────────────────── */
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--text-primary);
+  background: var(--surface);
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c7d0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #97a0af;
+}
+
+/* ─── AG Grid Custom Theme ───────────────────────────────────── */
+.ag-theme-alpine,
+.ag-root-wrapper {
+  --ag-border-color: var(--border-light) !important;
+  --ag-header-background-color: var(--brand-primary-light) !important;
+  --ag-header-foreground-color: var(--brand-primary-dark) !important;
+  --ag-row-hover-color: #f0faf6 !important;
+  --ag-selected-row-background-color: #dff3ec !important;
+  --ag-font-family: 'Inter', sans-serif !important;
+  --ag-font-size: 13px !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+}
+.ag-header-cell-label {
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 11px !important;
+  letter-spacing: 0.5px;
+}
+.ag-row {
+  transition: background-color var(--transition-fast);
+}
+.ag-paging-panel {
+  border-top: 1px solid var(--border-light) !important;
+  padding: 8px 16px !important;
+}
+
+/* ─── Ant Design Overrides ───────────────────────────────────── */
+.ant-btn-primary {
+  box-shadow: 0 2px 6px rgba(26, 127, 100, 0.3) !important;
+  transition: all var(--transition-fast) !important;
+}
+.ant-btn-primary:hover {
+  box-shadow: 0 4px 12px rgba(26, 127, 100, 0.4) !important;
+  transform: translateY(-1px);
+}
+.ant-card {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border-light) !important;
+  transition: box-shadow var(--transition-base) !important;
+}
+.ant-card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+.ant-tag {
+  border-radius: 20px !important;
+  font-weight: 500;
+  padding: 1px 10px !important;
+}
+.ant-input,
+.ant-select-selector {
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-fast) !important;
+}
+.ant-input:focus,
+.ant-input-focused,
+.ant-select-focused .ant-select-selector {
+  box-shadow: 0 0 0 3px rgba(26, 127, 100, 0.12) !important;
+}
+.ant-message-notice-content {
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ─── Page Container ─────────────────────────────────────────── */
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  animation: fadeSlideIn 0.3s ease-out;
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Grid Card Wrapper ──────────────────────────────────────── */
+.grid-wrapper {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+/* ─── Header nav highlight ───────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, #1a2332 0%, #243447 100%) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.app-header .ant-menu {
+  background: transparent !important;
+}
+.app-header .app-logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #6ee7b7, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
