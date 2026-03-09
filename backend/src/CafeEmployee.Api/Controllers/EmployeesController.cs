@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace CafeEmployee.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
 public class EmployeesController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -17,29 +16,42 @@ public class EmployeesController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
+    /// <summary>
+    /// Returns all employees, ordered by highest number of days worked first.
+    /// Optionally filtered by café name.
+    /// </summary>
+    [HttpGet("/employees")]
     public async Task<ActionResult<IEnumerable<EmployeeDto>>> Get([FromQuery] string? cafe)
     {
         var result = await _mediator.Send(new GetEmployeesQuery(cafe));
         return Ok(result);
     }
 
-    [HttpPost]
+    /// <summary>
+    /// Creates a new employee record.
+    /// </summary>
+    [HttpPost("/employee")]
     public async Task<ActionResult<string>> Create([FromBody] CreateEmployeeCommand command)
     {
         var id = await _mediator.Send(command);
         return CreatedAtAction(nameof(Get), new { id }, new { id });
     }
 
-    [HttpPut]
+    /// <summary>
+    /// Updates an existing employee record.
+    /// </summary>
+    [HttpPut("/employee")]
     public async Task<ActionResult> Update([FromBody] UpdateEmployeeCommand command)
     {
         await _mediator.Send(command);
         return Ok();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> Delete(string id)
+    /// <summary>
+    /// Deletes an existing employee record.
+    /// </summary>
+    [HttpDelete("/employee")]
+    public async Task<ActionResult> Delete([FromQuery] string id)
     {
         await _mediator.Send(new DeleteEmployeeCommand(id));
         return NoContent();

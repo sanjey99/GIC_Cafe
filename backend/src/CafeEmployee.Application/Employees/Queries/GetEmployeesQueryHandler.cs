@@ -24,10 +24,12 @@ public class GetEmployeesQueryHandler : IRequestHandler<GetEmployeesQuery, IEnum
                 Name = e.Name,
                 EmailAddress = e.EmailAddress,
                 PhoneNumber = e.PhoneNumber,
+                Gender = e.Gender.ToString(),
                 DaysWorked = e.StartDate.HasValue
                     ? (int)(DateTime.UtcNow - e.StartDate.Value).TotalDays
                     : 0,
-                Cafe = e.Cafe?.Name
+                Cafe = e.Cafe?.Name,
+                CafeId = e.CafeId
             })
             .OrderByDescending(e => e.DaysWorked);
     }

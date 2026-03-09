@@ -1,14 +1,45 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button, Space, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Space, Tag, Tooltip, message } from 'antd';
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ArrowLeftOutlined,
+  ManOutlined,
+  WomanOutlined,
+} from '@ant-design/icons';
 import { AgGridReact } from 'ag-grid-react';
-import { AllCommunityModule, ModuleRegistry, type ColDef, type ICellRendererParams } from 'ag-grid-community';
+import {
+  AllCommunityModule,
+  ModuleRegistry,
+  type ColDef,
+  type ICellRendererParams,
+} from 'ag-grid-community';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
 import { useEmployees, useDeleteEmployee } from '../hooks/useEmployees';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
 import type { EmployeeDto } from '../api/types';
 
+dayjs.extend(relativeTime);
+dayjs.extend(duration);
+
 ModuleRegistry.registerModules([AllCommunityModule]);
+
+/** Formats days worked into a human-readable string, e.g. "1y 3m" or "45d" */
+const formatDaysWorked = (days: number): string => {
+  if (days <= 0) return '0 days';
+  const d = dayjs.duration(days, 'days');
+  const years = Math.floor(d.asYears());
+  const months = Math.floor(d.asMonths() % 12);
+  const remainingDays = days - (years * 365 + months * 30);
+
+  if (years > 0) return `${years}y ${months}m`;
+  if (months > 0) return `${months}m ${remainingDays}d`;
+  return `${days}d`;
+};
 
 const EmployeesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,74 +54,147 @@ const EmployeesPage: React.FC = () => {
     if (!deleteTarget) return;
     try {
       await deleteMutation.mutateAsync(deleteTarget.id);
-      message.success('Employee deleted successfully');
+      message.success(`Employee "${deleteTarget.name}" deleted`);
       setDeleteTarget(null);
     } catch {
       message.error('Failed to delete employee');
     }
   }, [deleteTarget, deleteMutation]);
 
-  const columnDefs = useMemo<ColDef<EmployeeDto>[]>(() => [
-    { headerName: 'Employee ID', field: 'id', width: 140 },
-    { headerName: 'Name', field: 'name', flex: 1, filter: true },
-    { headerName: 'Email', field: 'emailAddress', flex: 1, filter: true },
-    { headerName: 'Phone', field: 'phoneNumber', width: 120 },
-    { headerName: 'Days Worked', field: 'daysWorked', width: 120, sort: 'desc' },
-    { headerName: 'Cafe', field: 'cafe', width: 150, filter: true },
-    {
-      headerName: 'Actions',
-      width: 150,
-      sortable: false,
-      filter: false,
-      cellRenderer: (params: ICellRendererParams<EmployeeDto>) => (
-        <Space>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => navigate(`/employees/edit/${params.data?.id}`)}
-          />
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => setDeleteTarget(params.data ?? null)}
-          />
-        </Space>
-      ),
-    },
-  ], [navigate]);
+  const columnDefs = useMemo<ColDef<EmployeeDto>[]>(
+    () => [
+      {
+        headerName: 'Employee ID',
+        field: 'id',
+        width: 140,
+        cellRenderer: (params: ICellRendererParams<EmployeeDto>) => (
+          <code style={{ fontSize: 12, color: '#1a7f64' }}>{params.value}</code>
+        ),
+      },
+      { headerName: 'Name', field: 'name', flex: 1, filter: true },
+      { headerName: 'Email', field: 'emailAddress', flex: 1, filter: true },
+      { headerName: 'Phone', field: 'phoneNumber', width: 120 },
+      {
+        headerName: 'Gender',
+        field: 'gender',
+        width: 100,
+        cellRenderer: (params: ICellRendererParams<EmployeeDto>) => (
+          <Tag
+            icon={params.value === 'Male' ? <ManOutlined /> : <WomanOutlined />}
+            color={params.value === 'Male' ? 'blue' : 'magenta'}
+          >
+            {params.value}
+          </Tag>
+        ),
+      },
+      {
+        headerName: 'Days Worked',
+        field: 'daysWorked',
+        width: 130,
+        sort: 'desc',
+        cellRenderer: (params: ICellRendererParams<EmployeeDto>) => (
+          <Tooltip title={`${params.value} days total`}>
+            <span style={{ fontWeight: 500 }}>
+              {formatDaysWorked(params.value as number)}
+            </span>
+          </Tooltip>
+        ),
+      },
+      {
+        headerName: 'Café',
+        field: 'cafe',
+        width: 150,
+        filter: true,
+        cellRenderer: (params: ICellRendererParams<EmployeeDto>) =>
+          params.value ? (
+            <Tag color="green">{params.value}</Tag>
+          ) : (
+            <span style={{ color: '#999' }}>Unassigned</span>
+          ),
+      },
+      {
+        headerName: 'Actions',
+        width: 120,
+        sortable: false,
+        filter: false,
+        cellRenderer: (params: ICellRendererParams<EmployeeDto>) => (
+          <Space size="small">
+            <Tooltip title="Edit">
+              <Button
+                type="text"
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => navigate(`/employees/edit/${params.data?.id}`)}
+              />
+            </Tooltip>
+            <Tooltip title="Delete">
+              <Button
+                type="text"
+                size="small"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => setDeleteTarget(params.data ?? null)}
+              />
+            </Tooltip>
+          </Space>
+        ),
+      },
+    ],
+    [navigate],
+  );
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">
-          Employees {cafeFilter ? `— ${cafeFilter}` : ''}
-        </h1>
+      <div className="flex justify-between items-center mb-5">
+        <div>
+          <h1 className="text-2xl font-bold m-0">
+            Employees{cafeFilter ? ` — ${cafeFilter}` : ''}
+          </h1>
+          <p className="text-gray-500 mt-1 mb-0">
+            {cafeFilter
+              ? `Showing employees assigned to ${cafeFilter}`
+              : 'Manage all employees across all cafés'}
+          </p>
+        </div>
         <Space>
           {cafeFilter && (
-            <Button onClick={() => navigate('/employees')}>Show All</Button>
+            <Button
+              icon={<ArrowLeftOutlined />}
+              onClick={() => navigate('/employees')}
+            >
+              Show All
+            </Button>
           )}
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/employees/add')}>
-            Add Employee
+          <Button
+            type="primary"
+            size="large"
+            icon={<PlusOutlined />}
+            onClick={() => navigate('/employees/add')}
+          >
+            Add New Employee
           </Button>
         </Space>
       </div>
 
-      <div style={{ width: '100%', height: 500 }}>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100">
         <AgGridReact<EmployeeDto>
           rowData={employees}
           columnDefs={columnDefs}
           loading={isLoading}
           pagination
           paginationPageSize={10}
+          paginationPageSizeSelector={[10, 25, 50]}
           domLayout="autoHeight"
           defaultColDef={{ resizable: true, sortable: true }}
+          rowHeight={52}
+          headerHeight={48}
         />
       </div>
 
       <ConfirmDeleteModal
         open={!!deleteTarget}
-        title={`Are you sure you want to delete employee "${deleteTarget?.name}" (${deleteTarget?.id})?`}
+        title={`Delete employee "${deleteTarget?.name}" (${deleteTarget?.id})?`}
+        description="This will permanently remove this employee record. This action cannot be undone."
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
         loading={deleteMutation.isPending}
