@@ -9,15 +9,15 @@ export const employeeService = {
   },
 
   create: async (payload: CreateEmployeePayload): Promise<{ id: string }> => {
-    const { data } = await api.post('/employee', payload);
+    const { data } = await api.post('/employees', payload);
     return data;
   },
 
   update: async (payload: UpdateEmployeePayload): Promise<void> => {
-    await api.put('/employee', payload);
+    await api.put('/employees', payload);
   },
 
   delete: async (id: string): Promise<void> => {
-    await api.delete('/employee', { params: { id } });
+    await api.delete('/employees', { params: { id } });
   },
 };

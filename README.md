@@ -126,24 +126,24 @@ App available at `http://localhost:5173` (proxies API to :5000)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/cafes?location={loc}` | List cafes, optionally filter by location. Sorted by employee count DESC |
-| `POST` | `/cafe` | Create a new cafe |
-| `PUT` | `/cafe` | Update an existing cafe |
-| `DELETE` | `/cafe?id={cafeId}` | Delete cafe and cascade-delete its employees |
+| `POST` | `/cafes` | Create a new cafe |
+| `PUT` | `/cafes` | Update an existing cafe |
+| `DELETE` | `/cafes?id={cafeId}` | Delete cafe and cascade-delete its employees |
 
 ### Employees
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/employees?cafe={name}` | List employees, optionally filter by cafe name. Sorted by days worked DESC |
-| `POST` | `/employee` | Create a new employee (auto-generates UIXXXXXXX ID) |
-| `PUT` | `/employee` | Update an existing employee |
-| `DELETE` | `/employee?id={id}` | Delete an employee |
+| `POST` | `/employees` | Create a new employee (auto-generates UIXXXXXXX ID) |
+| `PUT` | `/employees` | Update an existing employee |
+| `DELETE` | `/employees?id={id}` | Delete an employee |
 
 ### Request/Response Examples
 
 **Create Cafe:**
 ```json
-POST /cafe
+POST /cafes
 {
   "name": "BeansBrew",
   "description": "Quality craft coffee",
@@ -154,7 +154,7 @@ POST /cafe
 
 **Create Employee:**
 ```json
-POST /employee
+POST /employees
 {
   "name": "AliceTan",
   "emailAddress": "alice@mail.com",
