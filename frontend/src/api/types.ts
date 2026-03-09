@@ -12,8 +12,10 @@ export interface EmployeeDto {
   name: string;
   emailAddress: string;
   phoneNumber: string;
+  gender: 'Male' | 'Female';
   daysWorked: number;
   cafe: string | null;
+  cafeId: string | null;
 }
 
 export interface CreateCafePayload {

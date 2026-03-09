@@ -16,7 +16,8 @@ A production-ready full-stack application for managing cafes and their employees
 │                    Nginx (port 3000)                 │
 │            Reverse Proxy / Load Balancer             │
 ├──────────────────────┬──────────────────────────────┤
-│   /api/* → Backend   │   /* → Frontend              │
+│ /cafes,/cafe → API  │   /* → Frontend              │
+│ /employees,/employee │                              │
 ├──────────────────────┴──────────────────────────────┤
 │                                                      │
 │  ┌──────────────┐         ┌──────────────────────┐  │
@@ -124,36 +125,36 @@ App available at `http://localhost:5173` (proxies API to :5000)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/cafes?location={loc}` | List cafes, optionally filter by location. Sorted by employee count DESC |
-| `POST` | `/api/cafes` | Create a new cafe |
-| `PUT` | `/api/cafes` | Update an existing cafe |
-| `DELETE` | `/api/cafes/{id}` | Delete cafe and cascade-delete its employees |
+| `GET` | `/cafes?location={loc}` | List cafes, optionally filter by location. Sorted by employee count DESC |
+| `POST` | `/cafe` | Create a new cafe |
+| `PUT` | `/cafe` | Update an existing cafe |
+| `DELETE` | `/cafe?id={cafeId}` | Delete cafe and cascade-delete its employees |
 
 ### Employees
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/employees?cafe={name}` | List employees, optionally filter by cafe name. Sorted by days worked DESC |
-| `POST` | `/api/employees` | Create a new employee (auto-generates UIXXXXXXX ID) |
-| `PUT` | `/api/employees` | Update an existing employee |
-| `DELETE` | `/api/employees/{id}` | Delete an employee |
+| `GET` | `/employees?cafe={name}` | List employees, optionally filter by cafe name. Sorted by days worked DESC |
+| `POST` | `/employee` | Create a new employee (auto-generates UIXXXXXXX ID) |
+| `PUT` | `/employee` | Update an existing employee |
+| `DELETE` | `/employee?id={id}` | Delete an employee |
 
 ### Request/Response Examples
 
 **Create Cafe:**
 ```json
-POST /api/cafes
+POST /cafe
 {
   "name": "BeansBrew",
   "description": "Quality craft coffee",
-  "logo": null,
+  "logo": "data:image/png;base64,...",
   "location": "Tanjong Pagar"
 }
 ```
 
 **Create Employee:**
 ```json
-POST /api/employees
+POST /employee
 {
   "name": "AliceTan",
   "emailAddress": "alice@mail.com",
@@ -170,13 +171,14 @@ POST /api/employees
 ### Cafe
 - **Name**: 6–10 characters
 - **Description**: Max 256 characters
+- **Logo**: File upload — max 2MB, stored as base64 (PNG/JPG/GIF/WebP)
 - **Location**: Required
 
 ### Employee
 - **Name**: 6–10 characters
 - **Email**: Valid email format
 - **Phone**: Starts with 8 or 9, exactly 8 digits (Singapore format)
-- **Gender**: Male or Female
+- **Gender**: Male or Female (radio buttons)
 - **Employee ID**: Auto-generated `UIXXXXXXX` format
 
 ---
@@ -198,6 +200,11 @@ On first startup, the database is auto-seeded with:
 5. **Cascade Delete** — Deleting a cafe automatically removes all its employees
 6. **AgGrid** — Enterprise-grade grid with sorting, filtering, and pagination
 7. **TanStack Query** — Automatic cache invalidation on mutations
+8. **Logo as Base64** — File upload stored as base64 data URL in the database
+9. **Reusable TextInput** — Custom text input component wrapping Ant Design for consistency
+10. **DayJS Integration** — Human-friendly date formatting (e.g. "1y 3m", "45d")
+11. **Code Splitting** — Vendor chunk splitting for optimized production builds
+12. **Unsaved Changes Guard** — Modal confirmation when navigating away from dirty forms
 
 ---
 

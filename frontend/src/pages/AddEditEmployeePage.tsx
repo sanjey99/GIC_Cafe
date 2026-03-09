@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form, Input, Button, Radio, Select, message, Spin, Modal } from 'antd';
+import { Form, Button, Radio, Select, message, Spin, Modal, Card } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useCafes } from '../hooks/useCafes';
 import { useEmployees, useCreateEmployee, useUpdateEmployee } from '../hooks/useEmployees';
+import TextInput from '../components/TextInput';
 
 const AddEditEmployeePage: React.FC = () => {
   const navigate = useNavigate();
@@ -17,9 +19,6 @@ const AddEditEmployeePage: React.FC = () => {
   const updateMutation = useUpdateEmployee();
 
   const existingEmployee = isEdit ? employees.find((e) => e.id === id) : undefined;
-  const existingCafe = existingEmployee?.cafe
-    ? cafes.find((c) => c.name === existingEmployee.cafe)
-    : undefined;
 
   useEffect(() => {
     if (existingEmployee) {
@@ -27,26 +26,27 @@ const AddEditEmployeePage: React.FC = () => {
         name: existingEmployee.name,
         emailAddress: existingEmployee.emailAddress,
         phoneNumber: existingEmployee.phoneNumber,
-        gender: existingEmployee.phoneNumber ? undefined : undefined, // we'll need gender from API
-        cafeId: existingCafe?.id || null,
+        gender: existingEmployee.gender,
+        cafeId: existingEmployee.cafeId || undefined,
       });
     }
-  }, [existingEmployee, existingCafe, form]);
+  }, [existingEmployee, form]);
 
   const handleSubmit = async (values: {
     name: string;
     emailAddress: string;
     phoneNumber: string;
     gender: 'Male' | 'Female';
-    cafeId: string | null;
+    cafeId: string | undefined;
   }) => {
     try {
+      const payload = { ...values, cafeId: values.cafeId || null };
       if (isEdit && id) {
-        await updateMutation.mutateAsync({ id, ...values, cafeId: values.cafeId || null });
-        message.success('Employee updated');
+        await updateMutation.mutateAsync({ id, ...payload });
+        message.success('Employee updated successfully');
       } else {
-        await createMutation.mutateAsync({ ...values, cafeId: values.cafeId || null });
-        message.success('Employee created');
+        await createMutation.mutateAsync(payload);
+        message.success('Employee created successfully');
       }
       navigate('/employees');
     } catch (err: unknown) {
@@ -62,6 +62,7 @@ const AddEditEmployeePage: React.FC = () => {
         title: 'Unsaved Changes',
         content: 'You have unsaved changes. Are you sure you want to leave?',
         okText: 'Leave',
+        okType: 'danger',
         cancelText: 'Stay',
         onOk: () => navigate('/employees'),
       });
@@ -70,86 +71,125 @@ const AddEditEmployeePage: React.FC = () => {
     }
   };
 
-  if (isEdit && isLoading) return <Spin className="m-10" />;
+  if (isEdit && isLoading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Spin size="large" tip="Loading employee details..." />
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 max-w-xl">
-      <h1 className="text-2xl font-semibold mb-6">{isEdit ? 'Edit Employee' : 'Add Employee'}</h1>
-
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        onValuesChange={() => setDirty(true)}
+    <div className="p-6 max-w-2xl mx-auto">
+      <Button
+        type="text"
+        icon={<ArrowLeftOutlined />}
+        onClick={handleCancel}
+        className="mb-4"
       >
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[
-            { required: true, message: 'Name is required' },
-            { min: 6, message: 'Min 6 characters' },
-            { max: 10, message: 'Max 10 characters' },
-          ]}
-        >
-          <Input placeholder="Employee name" />
-        </Form.Item>
+        Back to Employees
+      </Button>
 
-        <Form.Item
-          label="Email"
-          name="emailAddress"
-          rules={[
-            { required: true, message: 'Email is required' },
-            { type: 'email', message: 'Invalid email format' },
-          ]}
-        >
-          <Input placeholder="email@example.com" />
-        </Form.Item>
+      <Card>
+        <h1 className="text-2xl font-bold mb-6">
+          {isEdit ? 'Edit Employee' : 'Add New Employee'}
+        </h1>
 
-        <Form.Item
-          label="Phone"
-          name="phoneNumber"
-          rules={[
-            { required: true, message: 'Phone is required' },
-            { pattern: /^[89]\d{7}$/, message: 'Must start with 8 or 9 and have 8 digits' },
-          ]}
-        >
-          <Input placeholder="8XXXXXXX or 9XXXXXXX" maxLength={8} />
-        </Form.Item>
-
-        <Form.Item
-          label="Gender"
-          name="gender"
-          rules={[{ required: true, message: 'Gender is required' }]}
-        >
-          <Radio.Group>
-            <Radio value="Male">Male</Radio>
-            <Radio value="Female">Female</Radio>
-          </Radio.Group>
-        </Form.Item>
-
-        <Form.Item label="Assigned Cafe" name="cafeId">
-          <Select allowClear placeholder="Select a cafe (optional)">
-            {cafes.map((c) => (
-              <Select.Option key={c.id} value={c.id}>
-                {c.name} — {c.location}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item>
-          <div className="flex gap-3">
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={createMutation.isPending || updateMutation.isPending}
-            >
-              {isEdit ? 'Update' : 'Create'}
-            </Button>
-            <Button onClick={handleCancel}>Cancel</Button>
+        {isEdit && existingEmployee && (
+          <div className="mb-6 p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <span className="text-gray-500 text-sm">Employee ID: </span>
+            <code className="text-sm font-semibold" style={{ color: '#1a7f64' }}>
+              {existingEmployee.id}
+            </code>
           </div>
-        </Form.Item>
-      </Form>
+        )}
+
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          onValuesChange={() => setDirty(true)}
+          requiredMark="optional"
+        >
+          <TextInput
+            name="name"
+            label="Full Name"
+            placeholder="Enter employee name"
+            maxLength={10}
+            rules={[
+              { required: true, message: 'Name is required' },
+              { min: 6, message: 'Minimum 6 characters' },
+              { max: 10, message: 'Maximum 10 characters' },
+            ]}
+          />
+
+          <TextInput
+            name="emailAddress"
+            label="Email Address"
+            placeholder="email@example.com"
+            rules={[
+              { required: true, message: 'Email is required' },
+              { type: 'email', message: 'Please enter a valid email address' },
+            ]}
+          />
+
+          <TextInput
+            name="phoneNumber"
+            label="Phone Number"
+            placeholder="8XXXXXXX or 9XXXXXXX"
+            maxLength={8}
+            rules={[
+              { required: true, message: 'Phone number is required' },
+              {
+                pattern: /^[89]\d{7}$/,
+                message: 'Must start with 8 or 9 and be exactly 8 digits',
+              },
+            ]}
+          />
+
+          <Form.Item
+            label="Gender"
+            name="gender"
+            rules={[{ required: true, message: 'Gender is required' }]}
+          >
+            <Radio.Group>
+              <Radio value="Male">Male</Radio>
+              <Radio value="Female">Female</Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item label="Assigned Café" name="cafeId">
+            <Select
+              allowClear
+              placeholder="Select a café (optional)"
+              showSearch
+              optionFilterProp="children"
+            >
+              {cafes.map((c) => (
+                <Select.Option key={c.id} value={c.id}>
+                  {c.name} — {c.location}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item className="mt-8">
+            <div className="flex gap-3">
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                loading={createMutation.isPending || updateMutation.isPending}
+              >
+                {isEdit ? 'Update Employee' : 'Create Employee'}
+              </Button>
+              <Button size="large" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Card>
     </div>
   );
 };
