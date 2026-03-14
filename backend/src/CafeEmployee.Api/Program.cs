@@ -69,8 +69,13 @@ try
 
     var app = builder.Build();
 
-    using (var scope = app.Services.CreateScope())
+    var runMigrationsOnStartupRaw = builder.Configuration["RUN_MIGRATIONS_ON_STARTUP"];
+    var runMigrationsOnStartup = string.IsNullOrWhiteSpace(runMigrationsOnStartupRaw)
+        || bool.TryParse(runMigrationsOnStartupRaw, out var shouldRunMigrations) && shouldRunMigrations;
+
+    if (runMigrationsOnStartup)
     {
+        using var scope = app.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Database.MigrateAsync();
         await DbSeeder.SeedAsync(db);
