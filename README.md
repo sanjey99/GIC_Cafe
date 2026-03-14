@@ -44,16 +44,23 @@ On first startup, the database is auto-seeded with:
 
 ### Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- .NET 8 SDK (for non-Docker local backend run)
+- Node.js 20+ (for non-Docker local frontend run)
 
-### Run with Docker Compose
+### Option A — Run Everything with Docker (recommended)
 
 ```bash
 docker compose up --build
 ```
 
-Open **http://localhost:3000** in your browser.
+Open **http://localhost:3000**.
 
-### Run Locally (Development)
+This starts:
+- Frontend (via Nginx): `http://localhost:3000`
+- API (proxied by Nginx): `/cafes`, `/employees`
+- PostgreSQL: `localhost:5432` (`postgres/postgres`, db `cafeemployee`)
+
+### Option B — Run Locally (without Docker for app processes)
 
 **Backend:**
 ```bash
@@ -69,6 +76,50 @@ npm install
 npm run dev
 ```
 App available at `http://localhost:5173` (proxies API to :5000)
+
+### Environment Configuration
+
+Copy env templates and adjust values if needed:
+
+**Bash / Git Bash:**
+
+```bash
+cp frontend/.env.example frontend/.env
+cp backend/src/CafeEmployee.Api/.env.example backend/src/CafeEmployee.Api/.env
+```
+
+**PowerShell:**
+
+```powershell
+Copy-Item frontend/.env.example frontend/.env
+Copy-Item backend/src/CafeEmployee.Api/.env.example backend/src/CafeEmployee.Api/.env
+```
+
+**Frontend (optional for local, required for split online deploy):**
+- `VITE_API_BASE_URL`
+  - Local Docker/Nginx: not required (defaults to `/`)
+  - Local Vite dev server: not required (proxy handles `/cafes` and `/employees`)
+  - Online split deploy: set backend URL, e.g. `https://your-api.onrender.com`
+
+**Backend:**
+- `ConnectionStrings__DefaultConnection`
+  - Local default: already set in appsettings to localhost postgres
+  - Online: set to managed Postgres connection string
+- `Cors__AllowedOrigins__0`, `Cors__AllowedOrigins__1`, ...
+  - Local defaults already allow `http://localhost:3000` and `http://localhost:5173`
+  - Online: add your frontend URL(s), e.g. `https://your-app.vercel.app`
+
+---
+
+
+**Steps:**
+1. Deploy database and copy the Postgres connection string
+2. Set backend env: `ConnectionStrings__DefaultConnection=<your postgres conn str>`
+3. Set backend CORS env to include your frontend domain (for example `Cors__AllowedOrigins__0=https://your-app.vercel.app`)
+4. Set frontend env: `VITE_API_BASE_URL=https://<your-backend-domain>`
+5. Redeploy backend and frontend
+
+This keeps one codebase working for both local Docker deployment and online split deployment.
 
 ---
 ## Validation Rules
