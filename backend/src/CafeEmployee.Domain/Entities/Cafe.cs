@@ -8,6 +8,5 @@ public class Cafe
     public string? Logo { get; set; }
     public string Location { get; set; } = string.Empty;
 
-    // Navigation property
     public ICollection<Employee> Employees { get; set; } = new List<Employee>();
 }

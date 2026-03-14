@@ -16,10 +16,7 @@ public class CafesController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Returns all cafés, ordered by highest number of employees first.
-    /// Optionally filtered by location.
-    /// </summary>
+  
     [HttpGet("/cafes")]
     public async Task<ActionResult<IEnumerable<CafeDto>>> Get([FromQuery] string? location)
     {
@@ -27,9 +24,7 @@ public class CafesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Creates a new café record.
-    /// </summary>
+
     [HttpPost("/cafes")]
     public async Task<ActionResult<Guid>> Create([FromBody] CreateCafeCommand command)
     {
@@ -37,9 +32,7 @@ public class CafesController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id }, new { id });
     }
 
-    /// <summary>
-    /// Updates an existing café record.
-    /// </summary>
+
     [HttpPut("/cafes")]
     public async Task<ActionResult> Update([FromBody] UpdateCafeCommand command)
     {
@@ -47,9 +40,7 @@ public class CafesController : ControllerBase
         return Ok();
     }
 
-    /// <summary>
-    /// Deletes an existing café and its associated employees.
-    /// </summary>
+
     [HttpDelete("/cafes")]
     public async Task<ActionResult> Delete([FromQuery] Guid id)
     {

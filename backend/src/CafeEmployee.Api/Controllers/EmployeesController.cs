@@ -16,10 +16,7 @@ public class EmployeesController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary>
-    /// Returns all employees, ordered by highest number of days worked first.
-    /// Optionally filtered by café name.
-    /// </summary>
+
     [HttpGet("/employees")]
     public async Task<ActionResult<IEnumerable<EmployeeDto>>> Get([FromQuery] string? cafe)
     {
@@ -27,9 +24,7 @@ public class EmployeesController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Creates a new employee record.
-    /// </summary>
+
     [HttpPost("/employees")]
     public async Task<ActionResult<string>> Create([FromBody] CreateEmployeeCommand command)
     {
@@ -37,9 +32,7 @@ public class EmployeesController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id }, new { id });
     }
 
-    /// <summary>
-    /// Updates an existing employee record.
-    /// </summary>
+
     [HttpPut("/employees")]
     public async Task<ActionResult> Update([FromBody] UpdateEmployeeCommand command)
     {
@@ -47,9 +40,7 @@ public class EmployeesController : ControllerBase
         return Ok();
     }
 
-    /// <summary>
-    /// Deletes an existing employee record.
-    /// </summary>
+
     [HttpDelete("/employees")]
     public async Task<ActionResult> Delete([FromQuery] string id)
     {

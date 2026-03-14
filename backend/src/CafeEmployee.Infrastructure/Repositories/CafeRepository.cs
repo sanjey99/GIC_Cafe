@@ -55,7 +55,7 @@ public class CafeRepository : ICafeRepository
 
         if (cafe is not null)
         {
-            _context.Cafes.Remove(cafe); // Cascade will remove employees
+            _context.Cafes.Remove(cafe); 
             await _context.SaveChangesAsync(ct);
         }
     }

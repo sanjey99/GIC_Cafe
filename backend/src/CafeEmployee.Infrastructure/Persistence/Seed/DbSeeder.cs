@@ -11,7 +11,6 @@ public static class DbSeeder
         if (await context.Cafes.AnyAsync())
             return;
 
-        // 5 Cafes
         var cafes = new List<Cafe>
         {
             new() { Id = Guid.NewGuid(), Name = "BeansBrew", Description = "Quality craft coffee in the heart of Tanjong Pagar", Logo = null, Location = "Tanjong Pagar" },
@@ -35,7 +34,6 @@ public static class DbSeeder
             Guid? cafeId = null;
             DateTime? startDate = null;
 
-            // Assign 16 employees to cafes, leave 4 unassigned
             if (i < 16)
             {
                 cafeId = cafes[i % 5].Id;

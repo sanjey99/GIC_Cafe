@@ -28,7 +28,6 @@ dayjs.extend(duration);
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-/** Formats days worked into a human-readable string, e.g. "1y 3m" or "45d" */
 const formatDaysWorked = (days: number): string => {
   if (days <= 0) return '0 days';
   const d = dayjs.duration(days, 'days');

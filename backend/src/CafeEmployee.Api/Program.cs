@@ -22,7 +22,6 @@ try
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog();
 
-    // --- Autofac ---
     builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
     builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
     {
@@ -30,22 +29,18 @@ try
         containerBuilder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>().InstancePerLifetimeScope();
     });
 
-    // --- EF Core + PostgreSQL ---
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
         ?? "Host=localhost;Port=5432;Database=cafeemployee;Username=postgres;Password=postgres";
 
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(connectionString));
 
-    // --- MediatR ---
     builder.Services.AddMediatR(cfg =>
         cfg.RegisterServicesFromAssembly(typeof(CreateCafeCommand).Assembly));
 
-    // --- FluentValidation ---
     builder.Services.AddValidatorsFromAssembly(typeof(CreateCafeCommand).Assembly);
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-    // --- CORS ---
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("AllowFrontend", policy =>
@@ -69,7 +64,6 @@ try
 
     var app = builder.Build();
 
-    // --- Database migration + seed ---
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -77,7 +71,6 @@ try
         await DbSeeder.SeedAsync(db);
     }
 
-    // --- Middleware pipeline ---
     app.UseMiddleware<ExceptionHandlingMiddleware>();
     app.UseSerilogRequestLogging();
 

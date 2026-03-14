@@ -8,9 +8,6 @@ import TextInput from '../components/TextInput';
 
 const MAX_LOGO_SIZE_MB = 2;
 
-/**
- * Converts a file to a base64 data URL string.
- */
 const fileToBase64 = (file: RcFile): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -41,7 +38,6 @@ const AddEditCafePage: React.FC = () => {
         description: existingCafe.description,
         location: existingCafe.location,
       });
-      // If existing logo is a base64 string, restore it
       if (existingCafe.logo) {
         setLogoBase64(existingCafe.logo);
         setLogoFileList([
@@ -78,7 +74,7 @@ const AddEditCafePage: React.FC = () => {
       },
     ]);
     setDirty(true);
-    return false; // prevent default upload
+    return false; 
   }, []);
 
   const handleLogoRemove = useCallback(() => {

@@ -10,10 +10,8 @@ public class Employee
     public string PhoneNumber { get; set; } = string.Empty;
     public Gender Gender { get; set; }
 
-    // Foreign key
     public Guid? CafeId { get; set; }
     public DateTime? StartDate { get; set; }
 
-    // Navigation property
     public Cafe? Cafe { get; set; }
 }
